@@ -24,7 +24,28 @@ struct snack {
 // Returns the first item in the list
 struct snack* insert_sorted(struct snack* snacks, 
   const char* name, int quantity, float cost) {
+    struct snack *new_snack;
+    new_snack = malloc(sizeof(*new_snack));
 
+    if (new_snack == NULL) {
+      printf("Cannot allocate new memory. Exitting ....");
+      exit(1);
+    }
+
+    strcp(new_snack->name, name);
+    new_snack->quantity = quantity;
+    new_snack->cost = cost;
+
+  while (snacks != NULL) {
+    if (strcmp(snacks->name, new_snack->name) < 0) {
+      snacks = snacks->next;
+    } else {
+      break;
+    }
+  }
+
+  new_snack->next = snacks;
+  snacks = new_snack;
   // todo
   return NULL;
 }
@@ -32,7 +53,18 @@ struct snack* insert_sorted(struct snack* snacks,
 // Delete (e.g. free) all nodes in the given list of snacks
 // Param snacks: the first node in the list (NULL if empty)
 void clear(struct snack* snacks) {
+	struct snack* current_snack = snacks;
+  struct snack next_snack;
+
+  while (current_snack != NULL) {
+    next_snack = *current_snack->next;
+    free(current_snack);
+    *current_snack = next_snack;
+  }
+
+  snacks = NULL;
 }
+
 
 int main() {
   return 0;
