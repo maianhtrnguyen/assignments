@@ -76,7 +76,7 @@ void clear(struct snack* snacks) {
     current_snack = next_snack;
   }
 
-  // snacks = NULL;
+  snacks = NULL;
 }
 
 int main() {
@@ -88,10 +88,9 @@ int main() {
   printf("Enter a number of snacks: ");
   scanf("%d", &number_of_snacks); 
 
-  struct snack* first_snack;
+  struct snack* first_snack = NULL;
 
   for (int i = 0; i < number_of_snacks; i++) { 
-      struct snack current_snack;
       
       printf("Enter a name: "); 
       scanf("%s", name); 
