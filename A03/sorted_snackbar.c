@@ -2,7 +2,7 @@
 // sorted_snackbar.c 
 // CS223 - Spring 2022
 // Ask the user for a list of snacks and store them in alphabetical order
-// Name:
+// Name: Mai Anh Nguyen
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,49 +24,100 @@ struct snack {
 // Returns the first item in the list
 struct snack* insert_sorted(struct snack* snacks, 
   const char* name, int quantity, float cost) {
+
     struct snack *new_snack;
-    new_snack = malloc(sizeof(*new_snack));
+    new_snack = malloc(sizeof(struct snack));
 
     if (new_snack == NULL) {
       printf("Cannot allocate new memory. Exitting ....");
       exit(1);
     }
 
-    strcp(new_snack->name, name);
+    strcpy(new_snack->name, name);
     new_snack->quantity = quantity;
     new_snack->cost = cost;
+    new_snack->next = NULL;
 
-  while (snacks != NULL) {
-    if (strcmp(snacks->name, new_snack->name) < 0) {
-      snacks = snacks->next;
+    if (snacks == NULL) {
+      return new_snack;
+    }
+
+    struct snack* current_snack = snacks;
+    struct snack* previous_snack = NULL;
+
+  while (current_snack != NULL) {
+    if (strcmp(current_snack->name, new_snack->name) < 0) {
+      previous_snack = current_snack;
+      current_snack = current_snack->next;
     } else {
       break;
     }
   }
 
-  new_snack->next = snacks;
-  snacks = new_snack;
-  // todo
-  return NULL;
+  new_snack->next = current_snack;
+  
+  if (previous_snack == NULL) {
+    return new_snack;
+  }
+
+  previous_snack->next = new_snack;
+  return snacks;
 }
 
 // Delete (e.g. free) all nodes in the given list of snacks
 // Param snacks: the first node in the list (NULL if empty)
 void clear(struct snack* snacks) {
-	struct snack* current_snack = snacks;
-  struct snack next_snack;
+  struct snack* current_snack = snacks;
+  struct snack* next_snack;
 
   while (current_snack != NULL) {
-    next_snack = *current_snack->next;
+    next_snack = current_snack->next;
     free(current_snack);
-    *current_snack = next_snack;
+    current_snack = next_snack;
   }
 
-  snacks = NULL;
+  // snacks = NULL;
 }
-
 
 int main() {
+  char name[128]; 
+  float cost; 
+  int quantity; 
+  int number_of_snacks; 
+
+  printf("Enter a number of snacks: ");
+  scanf("%d", &number_of_snacks); 
+
+  struct snack* first_snack;
+
+  for (int i = 0; i < number_of_snacks; i++) { 
+      struct snack current_snack;
+      
+      printf("Enter a name: "); 
+      scanf("%s", name); 
+
+      printf("Enter a cost: ");
+      scanf("%f", &cost);  
+
+      printf("Enter a quantity: "); 
+      scanf("%i", &quantity); 
+
+      first_snack = insert_sorted(first_snack, name, quantity, cost);
+  }
+
+  printf("\nWelcome to Mai Anh's Snack Bar.\n\n"); 
+
+  int index = 0;
+  struct snack* head = first_snack;
+
+  while (first_snack != NULL) {
+    printf("%d) %s\t cost: $%.2f \t quantity: %d \n", index, first_snack->name, first_snack->cost, first_snack->quantity); 
+    index += 1;
+    first_snack = first_snack->next;
+  }
+  
+  clear(head);
   return 0;
 }
+
 
