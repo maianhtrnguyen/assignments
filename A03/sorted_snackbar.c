@@ -25,7 +25,7 @@ struct snack {
 struct snack* insert_sorted(struct snack* snacks, 
   const char* name, int quantity, float cost) {
 
-    struct snack *new_snack;
+    struct snack *new_snack; // create new struct snack
     new_snack = malloc(sizeof(struct snack));
 
     if (new_snack == NULL) {
@@ -39,12 +39,14 @@ struct snack* insert_sorted(struct snack* snacks,
     new_snack->next = NULL;
 
     if (snacks == NULL) {
+      // if the current linked list is empty, new_snack will be the head of the list
       return new_snack;
     }
 
-    struct snack* current_snack = snacks;
+    struct snack* current_snack = snacks; // current pointer
     struct snack* previous_snack = NULL;
 
+  // go over each element in the linked list until finding the one that has alphabetical order after new_snack.name
   while (current_snack != NULL) {
     if (strcmp(current_snack->name, new_snack->name) < 0) {
       previous_snack = current_snack;
@@ -54,6 +56,7 @@ struct snack* insert_sorted(struct snack* snacks,
     }
   }
 
+  // add new_snack right before current_snack
   new_snack->next = current_snack;
   
   if (previous_snack == NULL) {
@@ -70,6 +73,7 @@ void clear(struct snack* snacks) {
   struct snack* current_snack = snacks;
   struct snack* next_snack;
 
+  // go over each element in the linked list and free it
   while (current_snack != NULL) {
     next_snack = current_snack->next;
     free(current_snack);
@@ -91,7 +95,6 @@ int main() {
   struct snack* first_snack = NULL;
 
   for (int i = 0; i < number_of_snacks; i++) { 
-      
       printf("Enter a name: "); 
       scanf("%s", name); 
 
@@ -101,21 +104,23 @@ int main() {
       printf("Enter a quantity: "); 
       scanf("%i", &quantity); 
 
+      // add new snack to the stack
       first_snack = insert_sorted(first_snack, name, quantity, cost);
   }
 
   printf("\nWelcome to Mai Anh's Snack Bar.\n\n"); 
 
   int index = 0;
-  struct snack* head = first_snack;
+  struct snack* head_snack = first_snack;
 
+  // print out the menu
   while (first_snack != NULL) {
     printf("%d) %s\t cost: $%.2f \t quantity: %d \n", index, first_snack->name, first_snack->cost, first_snack->quantity); 
     index += 1;
     first_snack = first_snack->next;
   }
   
-  clear(head);
+  clear(head_snack);
   return 0;
 }
 
