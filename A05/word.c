@@ -3,13 +3,18 @@
 
 int main() {
   char word[128];
-  printf("Enter 4 characters:");
+  unsigned int number = 0;
+  printf("Enter 4 characters: ");
   scanf("%s", word);
 
-  for (int i = 0; i <= strlen(word); i++) {
-    printf("Debug: %c = 0x", word[i]);
-    
-
+  for (int i = strlen(word) - 1; i >= 0; i--) {
+    unsigned int shifted_character = word[i] << 8 * (strlen(word) - 1 - i);
+    number += shifted_character;
+    printf("Debug: %c = 0x%08X\n", word[i], shifted_character);
   }
+  printf("Your number is: %d (0x%08x)\n", number, number);
   return 0;
 }
+
+
+
