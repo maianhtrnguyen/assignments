@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "read_ppm.h"
 
 // TODO: Implement this function
@@ -29,18 +30,16 @@ struct ppm_pixel* read_ppm(const char* filename, int* w, int* h) {
 
   // get width and height
   *w = atoi(&str[0]);
-  *h = atoi(&str[4]);
+  *h = 0;
 
-  // int height_index = 0;
-
-  // for (int i = 0; i < strlen(str); i++) {
-  //   if (str[i] == ' ') {
-  //     height_index += 1;
-  //     break;
-  //   }
-  // }
-  // *h = atoi(&str[height_index]);
-
+  // because width and height is separated by a blank space, we have to find the index of the height
+  for (int i = 0; i < strlen(str); i++) {
+    if (str[i] == ' ') {
+      *h = atoi(&str[i + 1]);
+      break;
+    }
+  }
+  
   fgets(str, 512, infile); // skip line with Maximum color value
 
   // create 2D array
