@@ -57,6 +57,7 @@ extern void write_ppm(const char* filename, struct ppm_pixel* pxs, int w, int h)
   }
 
   fprintf(infile, "P6 \n%d %d\n255\n", w, h);
+  fwrite(pxs, sizeof(struct ppm_pixel), w * h, infile);
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
@@ -64,7 +65,7 @@ extern void write_ppm(const char* filename, struct ppm_pixel* pxs, int w, int h)
       pxs[index].red = pxs[index].red << (rand() % 2); 
       pxs[index].green = pxs[index].green << (rand() % 2); 
       pxs[index].blue = pxs[index].blue << (rand() % 2); 
-      fwrite(pxs[index].colors, 1, 3, infile); // write to your file
+      // fwrite(pxs[index].colors, 3, 1, infile); // write to your file
     }
   }
 
