@@ -61,8 +61,10 @@ extern void write_ppm(const char* filename, struct ppm_pixel* pxs, int w, int h)
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      int index = i * w + j;
-      fwrite(pxs[index].colors, 1, 3, infile); // write to your file
+      // int index = i * w + j;
+      // fwrite(pxs[index].colors, 1, 3, infile); // write to your file
+      struct ppm_pixel currPixel = pxs[i*w + j];
+      fwrite(currPixel.colors, 1, 3, infile);
     }
   }
 
