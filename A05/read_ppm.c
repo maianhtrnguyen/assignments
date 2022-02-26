@@ -29,7 +29,18 @@ struct ppm_pixel* read_ppm(const char* filename, int* w, int* h) {
 
   // get width and height
   *w = atoi(&str[0]);
-  *h = atoi(&str[2]);
+  *h = atoi(&str[4]);
+
+  // int height_index = 0;
+
+  // for (int i = 0; i < strlen(str); i++) {
+  //   if (str[i] == ' ') {
+  //     height_index += 1;
+  //     break;
+  //   }
+  // }
+  // *h = atoi(&str[height_index]);
+
   fgets(str, 512, infile); // skip line with Maximum color value
 
   // create 2D array
@@ -57,14 +68,11 @@ extern void write_ppm(const char* filename, struct ppm_pixel* pxs, int w, int h)
   }
 
   fprintf(infile, "P6 \n%d %d\n255\n", w, h);
-  // fwrite(pxs, sizeof(struct ppm_pixel), w * h, infile);
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
       int index = i * w + j;
       fwrite(pxs[index].colors, 1, 3, infile); // write to your file
-      // struct ppm_pixel currPixel = pxs[i*w + j];
-      // fwrite(currPixel.colors, 1, 3, infile);
     }
   }
 

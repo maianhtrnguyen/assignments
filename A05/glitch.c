@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
       int index = i * width + j;
-      two_d_array[index].red = two_d_array[index].red << (rand() % 2); 
-      two_d_array[index].green = two_d_array[index].green << (rand() % 2); 
-      two_d_array[index].blue = two_d_array[index].blue << (rand() % 2); 
+      two_d_array[index].red = two_d_array[index].red << (rand() % 10); 
+      two_d_array[index].green = two_d_array[index].green << (rand() % 10); 
+      two_d_array[index].blue = two_d_array[index].blue << (rand() % 10); 
     }
   }
 
