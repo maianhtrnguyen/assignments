@@ -57,7 +57,7 @@ extern void write_ppm(const char* filename, struct ppm_pixel* pxs, int w, int h)
   }
 
   fprintf(infile, "P6 \n%d %d\n255\n", w, h);
-  fwrite(pxs, sizeof(struct ppm_pixel), w * h, infile);
+  // fwrite(pxs, sizeof(struct ppm_pixel), w * h, infile);
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
