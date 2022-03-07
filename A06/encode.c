@@ -7,7 +7,7 @@ void charToBinary(char c, char* binary_str) {
     int decimal = (int) c;
 
     for (int i = 0; i < 8; i++) {
-      binary_str[i] = decimal % 2;
+      binary_str[8 - i - 1] = decimal % 2;
       decimal = decimal / 2;
     }
 }
