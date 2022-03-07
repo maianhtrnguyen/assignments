@@ -26,6 +26,7 @@ void encode(char* binary_str, struct ppm_pixel* two_d_array) {
         }
       } 
     }
+    current_index += 1;
   }
 }
 
