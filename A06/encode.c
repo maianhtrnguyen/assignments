@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
   }
 
   encode(binary_str, two_d_array);
-  write_ppm(filename, two_d_array, width, height);
+  write_ppm(encoded_filename, two_d_array, width, height);
   printf("Writing file %s\n", encoded_filename);
 
   free(two_d_array);
