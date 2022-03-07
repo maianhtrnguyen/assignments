@@ -1,5 +1,33 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "read_ppm.h"
+
+void charToBinary(char c, char* binary_str) {
+    int decimal = (int) c;
+
+    for (int i = 0; i < 8; i++) {
+      binary_str[i] = decimal % 2;
+      decimal = decimal / 2;
+    }
+}
+
+void encode(char* binary_str, struct ppm_pixel* two_d_array) {
+  int current_index = 0;
+
+  for (int i = 0; i < 8; i++) {
+    for (int color_index = 0; color_index < 3; color_index++) {
+      if ((binary_str[i] == 1 && two_d_array[current_index].colors[color_index] % 2 == 0) || 
+          (binary_str[i] == 0 && two_d_array[current_index].colors[color_index] % 2 == 1)) {
+        if (two_d_array[current_index].colors[color_index] < 255) { 
+          two_d_array[current_index].colors[color_index] += 1; 
+        } else { 
+          two_d_array[current_index].colors[color_index] -= 1; 
+        }
+      } 
+    }
+  }
+}
 
 int main(int argc, char** argv) {
    // todo: call read_ppm
@@ -12,6 +40,7 @@ int main(int argc, char** argv) {
   int height, width = 0;
   char phrase[128];
   char* filename = argv[1];
+  int len = strlen(filename);
   char encoded_filename[128] = "";
 
   struct ppm_pixel* two_d_array = read_ppm(filename, &width, &height);
@@ -26,7 +55,7 @@ int main(int argc, char** argv) {
 
   if (result_array == NULL || binary_str == NULL) {
     printf("ERROR: malloc failed!\n");
-    return NULL;
+    exit(1);
   }
 
   printf("Reading %s with width %d and height %d\n", filename, width, height);
@@ -39,19 +68,19 @@ int main(int argc, char** argv) {
   strcat(encoded_filename, "-encoded.ppm");
 
   for (int i = 0; i < strlen(phrase); i++) {
-    if (phrase[i] == 2) {
-      binary_str[i] == '1';
-    }
+    charToBinary(phrase[i], binary_str);
   }
 
-
-  // result_array = binaryToChar(two_d_array, width, height, result_array);
-  // printf("%s", result_array);
+  encode(binary_str, two_d_array);
+  write_ppm(filename, two_d_array, width, height);
+  printf("Writing file %s\n", encoded_filename);
 
   free(two_d_array);
   two_d_array = NULL;
   free(result_array);
   result_array = NULL;
+  free(binary_str);
+  binary_str = NULL;
   return 0;
 }
 

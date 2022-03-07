@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "read_ppm.h"
 
 char* binaryToChar(struct ppm_pixel* two_d_array, int width, int height, char* result_array) {
@@ -53,7 +54,7 @@ int main(int argc, char** argv) {
 
   if (result_array == NULL) {
     printf("ERROR: malloc failed!\n");
-    return NULL;
+    exit(1);
   }
 
   printf("Reading %s with width %d and height %d\n", filename, width, height);
