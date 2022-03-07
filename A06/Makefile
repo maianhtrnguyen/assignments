@@ -8,5 +8,3 @@ encode : encode.c read_ppm.c
 decode : decode.c read_ppm.c
 	$(CC) -g -Wall -Wvla -Werror decode.c read_ppm.c -o $@
 
-test : test.c read_ppm.c 
-	$(CC) -g -Wall -Wvla -Werror test.c read_ppm.c -o $@

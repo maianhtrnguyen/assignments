@@ -51,6 +51,11 @@ int main(int argc, char** argv) {
     exit(1);
   }
 
+  if (result_array == NULL) {
+    printf("ERROR: malloc failed!\n");
+    return NULL;
+  }
+
   printf("Reading %s with width %d and height %d\n", filename, width, height);
   printf("Max number of characters in the image: %d\n", symbol_count);  
   result_array = binaryToChar(two_d_array, width, height, result_array);
