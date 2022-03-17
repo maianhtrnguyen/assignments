@@ -4,7 +4,6 @@
 
 int main() {
   char word[1024];
-  // unsigned int number = 0;
   printf("Please enter a phrase: ");
   scanf("%[^\n]s", word);
 
