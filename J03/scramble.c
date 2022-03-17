@@ -6,7 +6,7 @@ int main() {
   char word[1024];
   // unsigned int number = 0;
   printf("Please enter a phrase: ");
-  scanf("%s", word);
+  scanf("%[^\n]s", word);
 
   for (int i = 0; i < strlen(word); i++) {
     unsigned int second = word[i] & 0b00000010;
