@@ -3,14 +3,17 @@
 #include <string.h>
 #include "read_ppm.h"
 
-char* binaryToChar(struct ppm_pixel* two_d_array, int width, int height, char* result_array) {
-  int count, magnitude, bit_index, char_index = 0;
+void binaryToChar(struct ppm_pixel* two_d_array, int width, int height, char* result_array) {
+  int count = 0;
+  int magnitude = 0;
+  int bit_index = 0;
+  int char_index = 0;
 
-  for(int i = 0; i < width; i++) {
-    for(int j = 0; j < height; j++) {
+  for(int i = 0; i < height; i++) {
+    for(int j = 0; j < width; j++) {
       int pixel_index = i * width + j;
       for (int color_index = 0; color_index < 3; color_index++) {
-        unsigned int value = two_d_array[pixel_index].colors[color_index];
+        int value = two_d_array[pixel_index].colors[color_index] & 0x1;
         int exp = 7 - bit_index; 
 
         if (value == 1) {
@@ -21,7 +24,7 @@ char* binaryToChar(struct ppm_pixel* two_d_array, int width, int height, char* r
         count += 1;
 
         if (count == 8) {
-          result_array[char_index] = (char) magnitude;       
+          result_array[char_index] = (char) magnitude;  
           char_index += 1;
           count = 0;
           bit_index = 0;
@@ -30,7 +33,6 @@ char* binaryToChar(struct ppm_pixel* two_d_array, int width, int height, char* r
       }
     }
   }
-  return result_array; 
 }
 
 int main(int argc, char** argv) {
@@ -44,13 +46,14 @@ int main(int argc, char** argv) {
   int height, width = 0;
   char* filename = argv[1];
   struct ppm_pixel* two_d_array = read_ppm(filename, &width, &height);
-  int symbol_count = (width * height * 3)/8;
-  char* result_array = malloc(sizeof(char) * (width * height * 3)); 
 
   if (two_d_array == NULL) {
     printf("Memory cannot be allocated for the image or the filename is invalid.");
     exit(1);
   }
+
+  int symbol_count = (width * height * 3)/8;
+  char* result_array = malloc(width * height * 3); 
 
   if (result_array == NULL) {
     printf("ERROR: malloc failed!\n");
@@ -59,8 +62,9 @@ int main(int argc, char** argv) {
 
   printf("Reading %s with width %d and height %d\n", filename, width, height);
   printf("Max number of characters in the image: %d\n", symbol_count);  
-  result_array = binaryToChar(two_d_array, width, height, result_array);
-  printf("%s", result_array);
+  binaryToChar(two_d_array, width, height, result_array);
+  
+  printf("%s\n", result_array);
 
   free(two_d_array);
   two_d_array = NULL;
