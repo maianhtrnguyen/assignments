@@ -50,7 +50,7 @@ int main() {
     int word_len = strlen(word) - 1;    
     int remaining_chars = word_len;
 
-    printf("Welcome to Word Guess!\n\n");
+    printf("Welcome to Word Guess!\n\n"); 
 
     for(int i = 0; i < word_len; i++){
         guessed_word[i] = '_';
