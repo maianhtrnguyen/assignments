@@ -46,8 +46,6 @@ int main() {
         }
     }
 
-    printf("buffer %s\n", buffer);
-    printf("word %s\n", word);
     char guessed_word[64];
     int word_len = strlen(word) - 1;    
     int remaining_chars = word_len;
