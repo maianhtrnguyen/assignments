@@ -10,15 +10,17 @@ int main() {
     printf("Enter a count: ");
     scanf("%d", &count);
 
-    char* output = malloc(sizeof(char) * strlen(word) * count); 
+    char* output = (char *) malloc(strlen(word) * count + count); 
 
     if (output == NULL) { 
         printf("Cannot allocate new string. Exiting... \n"); 
         exit(1);
-    } else { 
-        for (int i =0; i < count; i++) { 
-            strcat(output, word);
-        }
+    } 
+
+    strcpy(output, word);
+
+    for (int i = 0; i < count; i++) { 
+        strcat(output, word);
     }
 
     printf("Your word is: %s \n", output); 
@@ -28,3 +30,4 @@ int main() {
 
     return 0;
 }
+

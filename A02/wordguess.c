@@ -2,100 +2,85 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <time.h>
-#include <stdbool.h>
+
+int checkGuess(char *word, char guess, char *guessed_word, int remaining_chars) {
+    int guess_count = 0;
+
+    for (int i = 0; i < strlen(word) - 1; i++) {
+        if (word[i] == guess && guessed_word[i] == '_') {
+            guessed_word[i] = guess;
+            guess_count += 1;
+            remaining_chars -= 1;
+        }
+    }
+
+    if (guess_count == 0) {
+        printf("Sorry, %c not found!\n\n", guess); 
+    }
+
+    return remaining_chars;
+}
 
 int main() {
-    srand(time(0));
-    FILE *infile;
-    infile = fopen("words.txt", "r");
+    FILE *infile = fopen("words.txt", "r");
 
-    // check if the file can be read or not 
     if (infile == NULL) {
         printf("Error: unable to open file %s\n", "words.txt");
         exit(1);
     }
 
-    // initialize variables
-    char guess; // guess the character
+    srand(time(0));
+    char guess;
     char buffer[64]; 
-    char word[128]; // word to be guessed
-    int num_words; 
-    int turn = 0; // number of turns to gess
-    bool game_over = false;
-    
-    // get the number of words 
-    if (fgets(buffer, 64, infile) != NULL) { 
-        sscanf(buffer, "%d", &num_words); 
-    }
+    char word[64]; // word to be guessed
+    int turn = 0;
 
-    // pick a random word index
-    int random_number = rand() % num_words + 1; 
+    fgets(buffer, sizeof buffer, infile); // get the number of words 
+    int num_words = atoi(buffer);
 
-    // get the word with the above index
+    int random_number = rand() % num_words + 1;
+
     for (int i = 0; i < random_number; i++) { 
-        if (fgets(buffer, 64, infile) != NULL) { 
-            sscanf(buffer, "%s", word); 
+        if (fgets(buffer, sizeof buffer, infile) != NULL) { 
+            strcpy(word, buffer);
         }
     }
 
-    printf("Welcome to Guess Word.\n");
+    printf("buffer %s\n", buffer);
+    printf("word %s\n", word);
+    char guessed_word[64];
+    int word_len = strlen(word) - 1;    
+    int remaining_chars = word_len;
 
-    // I pick 2 * strlen(word) because I want to create separated space between the characters
-    char* current_word = malloc(sizeof(char) * 2 * strlen(word)); 
-  
-    if (current_word == NULL) { 
-        printf("Cannot allocate new memory. Exiting... \n"); 
-        exit(1); 
+    printf("Welcome to Word Guess!\n\n");
+
+    for(int i = 0; i < word_len; i++){
+        guessed_word[i] = '_';
     }
 
-    // fill even indices with "_" and leave odd indices with blank space
-    for (int i = 0; i < strlen(word) * 2; i++) { 
-        if (i % 2 == 0) {
-            strcpy(&current_word[i], "_"); 
-        } else { 
-            strcpy(&current_word[i], " "); 
-        }
-    }
-
-    // Play until the game is over
-    while (!game_over) { 
-        turn += 1; 
-        bool char_found = false; 
+    while(remaining_chars > 0) {
+        turn += 1;
         printf("Turn: %d\n\n", turn);
-        printf("%s\n", current_word); 
 
-        printf("Guess a chatacter: "); 
+        for (int i = 0; i < word_len; i++) {
+            printf("%c ", guessed_word[i]);
+        }
+
+        printf("\nGuess a chatacter: "); 
         scanf(" %c", &guess); 
+        printf("\n");
 
-        for (int i = 0; i < strlen(word); i++) { 
-            if (word[i] == guess) { 
-                char_found = true; 
-                current_word[i * 2] = guess; 
-            }
-        }
-    
-        if (!char_found) { 
-            printf("Sorry, %c not found!\n\n", guess); 
-        }
-    
-        game_over = true; 
-
-        for (int i = 0; i < strlen(word); i++) { 
-            if (current_word[i * 2] == '_') { 
-                game_over = false; 
-            }
-        }
+        remaining_chars = checkGuess(word, guess, guessed_word, remaining_chars);
     }
 
-    printf("%s\n", current_word); 
-    printf("You won in %i turns. \n", turn); 
+    // print final result
+    for (int i = 0; i < word_len; i++) {
+        printf("%c ", guessed_word[i]);
+    }
 
-    free(current_word); 
-    current_word = NULL; 
+    printf("\nYou won in %i turns! \n", turn); 
+
+    fclose(infile);
 
     return 0; 
 }
-
-
-
-
