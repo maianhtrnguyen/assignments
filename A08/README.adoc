@@ -44,18 +44,14 @@ The increase in 1040 bytes comes from printf() calling malloc() to allocate memo
 
 ### Why is the value 1040 bytes? 
 [%hardbreaks]
-Whenever printf() calles malloc(), it will allocate a new string of actual 
-size in memory 1040 bytes 
+Whenever printf() calles malloc(), it will allocate a new string of actual size in memory 1040 bytes 
 
-### How many bytes does `mylloc_list.c` allocate when the program ends? Explain why
-this amount makes sense.
+### How many bytes does `mylloc_list.c` allocate when the program ends? Explain why this amount makes sense.
 [%hardbreaks]
-1156 bytes were increased when the program ends, in which there are 1040 bytes allocated by printf(), 
-and 116 bytes allocated by calling sbrk(). 
+1156 bytes were increased when the program ends, in which there are 1040 bytes allocated by printf(), and 116 bytes allocated by calling sbrk(). 
 
 Size of struct chunk = 2 * 4 bytes (for each int) + 8 byte (for struct next pointer) = 16 bytes.
-Calling malloc(100) also means that we are calling sbrk(100 + 16) = sbrk(116). Therefore, every time we call 
-malloc(100), we are allocating 116 bytes in memory. 
+Calling malloc(100) also means that we are calling sbrk(100 + 16) = sbrk(116). Therefore, every time we call malloc(100), we are allocating 116 bytes in memory. 
 
 = Fragementation
 
@@ -65,11 +61,9 @@ Fragmentation is when a user program has allocated memory, but does not use it.
 
 ### What is the difference between internal and external fragmentation?
 [%hardbreaks]
-Internal fragmentation occurs when a process is assigned a big memory block, but some portion of the memory is left unusued because 
-it cannot be used by another process. 
+Internal fragmentation occurs when a process is assigned a big memory block, but some portion of the memory is left unusued because it cannot be used by another process. 
 
-External fragmentation occurs when there is enough memory space to satisfy a request/process. However, it is not contiguous, so
-it cannot be used. 
+External fragmentation occurs when there is enough memory space to satisfy a request/process. However, it is not contiguous, so it cannot be used. 
 
 ### Output for benchmark1:
 [%hardbreaks]
