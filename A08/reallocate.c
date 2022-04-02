@@ -25,9 +25,5 @@ int main (int argc, char* argv[]) {
   printf("The final top of the heap is %p\n", final_top);
   int difference = (int) (final_top - initial_top);
   printf("Increased by %d (0x%0x) bytes\n", difference, difference);
-
   return 0 ;
 }
-
-
-
