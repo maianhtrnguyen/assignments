@@ -59,11 +59,11 @@ malloc(100), we are allocating 116 bytes in memory.
 
 = Fragementation
 
-What is fragmentation?
+# What is fragmentation?
 [%hardbreaks]
 Fragmentation is when a user program has allocated memory, but does not use it.
 
-What is the difference between internal and external fragmentation?
+# What is the difference between internal and external fragmentation?
 [%hardbreaks]
 Internal fragmentation occurs when a process is assigned a big memory block, but some portion of the memory is left unusued because 
 it cannot be used by another process. 
@@ -71,7 +71,7 @@ it cannot be used by another process.
 External fragmentation occurs when there is enough memory space to satisfy a request/process. However, it is not contiguous, so
 it cannot be used. 
 
-Output for benchmark1:
+# Output for benchmark1:
 [%hardbreaks]
 The initial top of the heap is 0x7f8d16aef000.
 0
@@ -105,7 +105,7 @@ Increased by 39 (0x27) byte
 The current top of the heap is 0x7f8d16af8c68.
 Increased by 39 (0x27) byte
 
-Output for benchmark2: 
+# Output for benchmark2: 
 [%hardbreaks]
 The initial top of the heap is 0x7f65e8315000.
 Total blocks: 161 Free: 103 Used: 58
