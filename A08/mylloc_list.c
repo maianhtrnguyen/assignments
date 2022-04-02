@@ -21,6 +21,8 @@ void *malloc (size_t size) {
 
   while(next != NULL) {
     if (next->size >= size) {
+      next->used_size += size;
+
       if (prev != NULL) { 
         prev->next = next->next;
       } else {
@@ -42,6 +44,7 @@ void *malloc (size_t size) {
   } else {
     struct chunk* cnk = (struct chunk*) memory;
     cnk->size = size;
+    cnk->used_size = size;
     return (void*) (cnk + 1);
   }
 }
@@ -51,6 +54,7 @@ void free(void *memory) {
   if (memory != NULL) {
     struct chunk *current_chunk = (struct chunk*)((struct chunk*) memory - 1);
     current_chunk->next = flist;
+    current_chunk->used_size = 0;
     flist = current_chunk;
   } 
   return;
