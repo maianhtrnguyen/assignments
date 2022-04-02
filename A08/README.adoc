@@ -47,7 +47,7 @@ The increase in 1040 bytes comes from printf() calling malloc() to allocate memo
 Whenever printf() calles malloc(), it will allocate a new string of actual 
 size in memory 1040 bytes 
 
-How many bytes does `mylloc_list.c` allocate when the program ends? Explain why
+### How many bytes does `mylloc_list.c` allocate when the program ends? Explain why
 this amount makes sense.
 [%hardbreaks]
 1156 bytes were increased when the program ends, in which there are 1040 bytes allocated by printf(), 
