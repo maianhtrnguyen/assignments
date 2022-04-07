@@ -6,7 +6,7 @@
 #include "read_ppm.h"
 
 int main(int argc, char* argv[]) {
-  int size = 2000;
+  int size = 100;
   float xmin = -2.0;
   float xmax = 0.47;
   float ymin = -1.12;
@@ -30,10 +30,10 @@ int main(int argc, char* argv[]) {
 
   // todo: your work here
   // generate pallet
-  srand(time(0));
   double timer;
   struct timeval tstart, tend;
   gettimeofday(&tstart, NULL);
+  srand(time(0));
   struct ppm_pixel* two_d_array = malloc(sizeof(struct ppm_pixel) * size * size);
   struct ppm_pixel* palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
   char output_filename[128];
@@ -58,8 +58,8 @@ int main(int argc, char* argv[]) {
   // compute image
   for (int row = 0; row < size; row++) {
     for (int col = 0; col < size; col++) {
-      float xfrac = row/size;
-      float yfrac = col/size;
+      float xfrac = ((float)row)/size;
+      float yfrac = ((float)col)/size;
       float x0 = xmin + xfrac * (xmax - xmin);
       float y0 = ymin + yfrac * (ymax - ymin);
 
@@ -78,7 +78,9 @@ int main(int argc, char* argv[]) {
 
       if (iter < maxIterations) {
         // write color to image at location (row,col)
-        two_d_array[index] = palette[iter];
+        two_d_array[index].red = palette[iter].red;
+        two_d_array[index].green = palette[iter].green;
+        two_d_array[index].blue = palette[iter].blue;
       } else {
         // assign black color 
         two_d_array[index].red = 0; 
