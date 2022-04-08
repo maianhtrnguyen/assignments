@@ -6,8 +6,8 @@ What are the performance specifications of the machine: number and speed of
 processors, size of RAM? (use `lscpu` and `free -m`)
 [%hardbreaks]
 CPU(s):                          64
-CPU max MHz:                     4100.0000
-CPU min MHz:                     1200.0000
+CPU max MHz:                     4100
+CPU min MHz:                     1200
 
             total       used        free      shared  buff/cache   available
 Mem:        95320       11181       70998       4       13140       83304
