@@ -10,7 +10,7 @@
 #include "read_ppm.h"
 
 int main(int argc, char* argv[]) {
-  int size = 400;
+  int size = 1000;
   float xmin = -2.0;
   float xmax = 0.47;
   float ymin = -1.12;
@@ -45,8 +45,7 @@ int main(int argc, char* argv[]) {
 
   srand(time(0));
 
-  int shmid;
-  shmid = shmget(IPC_PRIVATE, sizeof(char) * size * size, 0644 | IPC_CREAT);
+  int shmid = shmget(IPC_PRIVATE, sizeof(struct ppm_pixel) * size * size, 0644 | IPC_CREAT);
   if (shmid == -1) {
     perror("Error: cannot initialize shared memory\n");
     exit(1);
@@ -58,8 +57,7 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
-  struct ppm_pixel* palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
-  // int** rowsAndCols = malloc(sizeof(int*) * numProcesses);
+  struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
   int rowsAndCols[4][4];
   char output_filename[128];
 
@@ -104,8 +102,8 @@ int main(int argc, char* argv[]) {
     if (pid == 0) {
       for (int col = rowsAndCols[i][2]; col < rowsAndCols[i][3]; col++) {
         for (int row = rowsAndCols[i][0]; row < rowsAndCols[i][1]; row++) {
-          float xfrac = ((float)row)/size;
-          float yfrac = ((float)col)/size;
+          float xfrac = ((float)row)/(float)size;
+          float yfrac = ((float)col)/(float)size;
           float x0 = xmin + xfrac * (xmax - xmin);
           float y0 = ymin + yfrac * (ymax - ymin);
 
