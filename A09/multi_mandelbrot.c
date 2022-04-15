@@ -10,7 +10,7 @@
 #include "read_ppm.h"
 
 int main(int argc, char* argv[]) {
-  int size = 1000;
+  int size = 400;
   float xmin = -2.0;
   float xmax = 0.47;
   float ymin = -1.12;
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
             iter += 1;
           }
 
-          int index = (row * size) + col;
+          int index = (col * size) + row;
 
           if (iter < maxIterations) {
             // write color to image at location (row,col)
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
   gettimeofday(&tend, NULL);
   timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)/1.e6;
   printf("Computed mandelbrot set (%dx%d) in %.6f seconds\n", size, size, timer);
-  sprintf(output_filename, "mandelbrot-%d-%.ld.ppm", size, time(0));
+  sprintf(output_filename, "multi-mandelbrot-%d-%.ld.ppm", size, time(0));
   printf("Writing file: %s\n", output_filename);
   write_ppm(output_filename, two_d_array, size, size);
 
