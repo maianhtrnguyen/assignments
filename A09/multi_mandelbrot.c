@@ -10,7 +10,7 @@
 #include "read_ppm.h"
 
 int main(int argc, char* argv[]) {
-  int size = 1000;
+  int size = 2000;
   float xmin = -2.0;
   float xmax = 0.47;
   float ymin = -1.12;
@@ -39,7 +39,6 @@ int main(int argc, char* argv[]) {
   // generate pallet
   // compute image
 
-  // initialize variables
   double timer;
   struct timeval tstart, tend;
 
@@ -58,7 +57,7 @@ int main(int argc, char* argv[]) {
   }
 
   struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
-  int rowsAndCols[4][4];
+  int rowsAndCols[4][4]; // 2D array
   char output_filename[128];
 
   if (palette == NULL) {
@@ -165,7 +164,5 @@ int main(int argc, char* argv[]) {
 
   free(palette);
   palette = NULL;
-  // free(rowsAndCols);
-  // rowsAndCols = NULL;
   return 0;
 }
