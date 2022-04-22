@@ -6,6 +6,8 @@
 // The values should be returned in a flat float array
 float* readvector(const char* filename, int *size) {
   // todo: implement me
+  file = fopen()
+  
   return NULL;
 }
 
