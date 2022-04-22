@@ -3,13 +3,13 @@
 #include <unistd.h>
 #include <assert.h>
 #include <time.h>
+#include <sys/time.h>
 #include <pthread.h>
 #include "read_ppm.h"
 
 struct t_arg {
     struct ppm_pixel *palette;
     struct ppm_pixel *two_d_array; 
-    long id;
     int size;
     float xmin;
     float xmax;
@@ -20,11 +20,12 @@ struct t_arg {
     int col_start;
     int col_end;
     int maxIterations;
-}
+};
 
 void * computeMandelbrot(void* args) {
   //cast to a struct t_arg from void*
   struct t_arg * myargs = (struct t_arg *) args;
+  printf("Thread %lu) sub-image block: cols (%d,%d) to rows (%d,%d)\n", pthread_self(), myargs->col_start, myargs->col_end, myargs->row_start, myargs->row_end);
 
   for (int col = myargs->col_start; col < myargs->col_end; col++) {
     for (int row = myargs->row_start; row < myargs->row_end; row++) {
@@ -59,6 +60,8 @@ void * computeMandelbrot(void* args) {
       }
     }
   }
+  printf("Thread %lu) finished\n", pthread_self());
+  return NULL;
 }
 
 int main(int argc, char* argv[]) {
@@ -88,21 +91,88 @@ int main(int argc, char* argv[]) {
   printf("  Y range = [%.4f,%.4f]\n", ymin, ymax);
 
   // todo: your code here
-  srand(time(0));
   int nthreads = 4;
-  // generate pallet
-  struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
+  double timer;
+  struct timeval tstart, tend;
+  srand(time(0));
+  pthread_t threads[4]; // 4 threads
+  struct t_arg *myargs = malloc(sizeof(struct t_arg) * 4);
+  struct ppm_pixel* two_d_array = malloc(sizeof(struct ppm_pixel) * size * size);
+  struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);  // generate pallet
+  char output_filename[128];
+
+  if (two_d_array == NULL) {
+    printf("ERROR: malloc failed!\n");
+    exit(1);
+  }
 
   if (palette == NULL) {
     printf("ERROR: malloc failed!\n");
     exit(1);
   }
 
-    // generate random colors
+  // generate random colors
   for (int i = 0; i < maxIterations; i++) {
     palette[i].red = rand() % 255;
     palette[i].green = rand() % 255;
     palette[i].blue = rand() % 255;
   }
+
   // compute image
+  gettimeofday(&tstart, NULL);
+  for (int i=0; i < nthreads; i++){
+    myargs[i].palette = palette;
+    myargs[i].two_d_array = &two_d_array[i];
+    myargs[i].size = size;
+    myargs[i].xmin = xmin;
+    myargs[i].xmax = xmax;
+    myargs[i].ymin = ymin;
+    myargs[i].ymax = ymax;
+    myargs[i].maxIterations = maxIterations;
+
+    if (i == 0) {
+      myargs[i].row_start = 0;
+      myargs[i].row_end = size/2;
+      myargs[i].col_start = 0;
+      myargs[i].col_end = size/2;
+    } else if (i == 1) {
+      myargs[i].row_start = 0;
+      myargs[i].row_end = size/2;
+      myargs[i].col_start = size/2;
+      myargs[i].col_end = size;
+    } else if (i == 2) {
+      myargs[i].row_start = size/2;
+      myargs[i].row_end = size;
+      myargs[i].col_start = 0;
+      myargs[i].col_end = size/2;
+    } else if (i == 3) {
+      myargs[i].row_start = size/2;
+      myargs[i].row_end = size;
+      myargs[i].col_start = size/2;
+      myargs[i].col_end = size;
+    }
+  }
+
+  for (int i = 0; i < nthreads; i++) {
+    pthread_create(&threads[i], NULL, computeMandelbrot, &myargs[i]);
+  }
+
+  for (int i = 0; i < nthreads; i++) {
+    pthread_join(threads[i], NULL);
+  }
+
+  gettimeofday(&tend, NULL);
+  timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)/1.e6;
+  printf("Computed mandelbrot set (%dx%d) in %.6f seconds\n", size, size, timer);
+  sprintf(output_filename, "mandelbrot-%d-%.ld.ppm", size, time(0));
+  printf("Writing file: %s\n", output_filename);
+  write_ppm(output_filename, two_d_array, size, size);
+
+  free(palette);
+  palette = NULL;
+  free(two_d_array);
+  two_d_array = NULL;
+  free(myargs);
+  myargs = NULL;
+  return 0;
 }
