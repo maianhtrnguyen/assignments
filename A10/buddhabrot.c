@@ -10,8 +10,8 @@
 #include <sys/wait.h>
 #include <math.h>
 
-static unsigned long max_count = 0;
-pthread_mutex_t mutex;
+static unsigned long long max_count = 0;
+pthread_mutex_t mutex; 
 pthread_barrier_t barrier;
 
 struct t_arg {
@@ -88,12 +88,10 @@ void * computeMandelbrot(void* args) {
           int yrow = round(myargs->size * (y - myargs->ymin)/(myargs->ymax - myargs->ymin));
           int xcol = round(myargs->size * (x - myargs->xmin)/(myargs->xmax - myargs->xmin));
 
-          if (! (yrow < 0 || yrow >= myargs->size)) {
-            if (! (xcol < 0 || xcol >= myargs->size)) {
-              myargs->count[yrow * myargs->size + xcol] += 1;
-              if (max_count < myargs->count[yrow * myargs->size + xcol]) {
-                max_count = myargs->count[yrow * myargs->size + xcol];
-              }
+          if (!((yrow < 0 || yrow >= myargs->size) || (xcol < 0 || xcol >= myargs->size))) {
+            myargs->count[yrow * myargs->size + xcol] += 1;
+            if (max_count < myargs->count[yrow * myargs->size + xcol]) {
+              max_count = myargs->count[yrow * myargs->size + xcol];
             }
           }
         }
@@ -109,17 +107,20 @@ void * computeMandelbrot(void* args) {
 
   for (int col = myargs->col_start; col < myargs->col_end; col++) {
     for (int row = myargs->row_start; row < myargs->row_end; row++) {
-      int value = 0;
+      float value = 0;
       int index = row * myargs->size + col;
 
-      if (myargs->count[row * myargs->size + col] > 0) {
+      if (myargs->count[index] > 0) {
         value = log(myargs->count[index]) / log(max_count);
         value = pow(value, factor);
       }
 
-      myargs->two_d_array[index].red = value * 255;
-      myargs->two_d_array[index].green = value * 255;
-      myargs->two_d_array[index].blue = value * 255;
+      // myargs->two_d_array[index].red = round(value *255);
+      // myargs->two_d_array[index].green = round(value *255);
+      // myargs->two_d_array[index].blue = round(value *255);
+      myargs->two_d_array[index].red = value *255;
+      myargs->two_d_array[index].green = value *255;
+      myargs->two_d_array[index].blue = value *255;
     }
   }
   printf("Thread %lu) finished\n", pthread_self());
