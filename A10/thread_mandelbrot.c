@@ -120,9 +120,10 @@ int main(int argc, char* argv[]) {
 
   // compute image
   gettimeofday(&tstart, NULL);
+  
   for (int i=0; i < nthreads; i++){
     myargs[i].palette = palette;
-    myargs[i].two_d_array = &two_d_array[i];
+    myargs[i].two_d_array = two_d_array;
     myargs[i].size = size;
     myargs[i].xmin = xmin;
     myargs[i].xmax = xmax;
@@ -132,30 +133,32 @@ int main(int argc, char* argv[]) {
 
     if (i == 0) {
       myargs[i].row_start = 0;
-      myargs[i].row_end = size/2;
+      myargs[i].row_end = myargs[i].size/2;
       myargs[i].col_start = 0;
-      myargs[i].col_end = size/2;
+      myargs[i].col_end = myargs[i].size/2;
     } else if (i == 1) {
       myargs[i].row_start = 0;
-      myargs[i].row_end = size/2;
-      myargs[i].col_start = size/2;
-      myargs[i].col_end = size;
+      myargs[i].row_end = myargs[i].size/2;
+      myargs[i].col_start = myargs[i].size/2;
+      myargs[i].col_end = myargs[i].size;
     } else if (i == 2) {
-      myargs[i].row_start = size/2;
-      myargs[i].row_end = size;
+      myargs[i].row_start = myargs[i].size/2;
+      myargs[i].row_end = myargs[i].size;
       myargs[i].col_start = 0;
-      myargs[i].col_end = size/2;
+      myargs[i].col_end = myargs[i].size/2;
     } else if (i == 3) {
-      myargs[i].row_start = size/2;
-      myargs[i].row_end = size;
-      myargs[i].col_start = size/2;
-      myargs[i].col_end = size;
+      myargs[i].row_start = myargs[i].size/2;
+      myargs[i].row_end = myargs[i].size;
+      myargs[i].col_start = myargs[i].size/2;
+      myargs[i].col_end = myargs[i].size;
     }
+
+    pthread_create(&threads[i], NULL, computeMandelbrot, (void*) &myargs[i]);
   }
 
-  for (int i = 0; i < nthreads; i++) {
-    pthread_create(&threads[i], NULL, computeMandelbrot, &myargs[i]);
-  }
+  // for (int i = 0; i < nthreads; i++) {
+  //   pthread_create(&threads[i], NULL, computeMandelbrot, (void*) &myargs[i]);
+  // }
 
   for (int i = 0; i < nthreads; i++) {
     pthread_join(threads[i], NULL);
