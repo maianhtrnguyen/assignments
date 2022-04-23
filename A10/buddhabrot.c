@@ -101,19 +101,11 @@ void * computeMandelbrot(void* args) {
           }
 
           pthread_mutex_unlock(&mutex); 
-
-          // if (!((yrow < 0 || yrow >= myargs->size) || (xcol < 0 || xcol >= myargs->size))) {
-          //   myargs->count[yrow * myargs->size + xcol] += 1;
-          //   if (max_count < myargs->count[yrow * myargs->size + xcol]) {
-          //     max_count = myargs->count[yrow * myargs->size + xcol];
-          //   }
-          // }
         }
       }
     }
   }
 
-  // pthread_mutex_unlock(&mutex);
   // Step 3: Compute colors
   pthread_barrier_wait(&barrier);
   float gamma = 0.681;
