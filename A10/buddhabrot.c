@@ -10,12 +10,11 @@
 #include <sys/wait.h>
 #include <math.h>
 
-static unsigned long long max_count = 0;
+static unsigned long max_count = 0;
 pthread_mutex_t mutex; 
 pthread_barrier_t barrier;
 
 struct t_arg {
-    struct ppm_pixel *palette;
     struct ppm_pixel *two_d_array; 
     int size;
     float xmin;
@@ -68,8 +67,6 @@ void * computeMandelbrot(void* args) {
   }
 
   // Step 2: Compute visited counts
-  pthread_mutex_lock(&mutex);
-
   for (int col = myargs->col_start; col < myargs->col_end; col++) {
     for (int row = myargs->row_start; row < myargs->row_end; row++) {
       if (myargs->membership[row * myargs->size + col] == 0) {
@@ -88,18 +85,35 @@ void * computeMandelbrot(void* args) {
           int yrow = round(myargs->size * (y - myargs->ymin)/(myargs->ymax - myargs->ymin));
           int xcol = round(myargs->size * (x - myargs->xmin)/(myargs->xmax - myargs->xmin));
 
-          if (!((yrow < 0 || yrow >= myargs->size) || (xcol < 0 || xcol >= myargs->size))) {
-            myargs->count[yrow * myargs->size + xcol] += 1;
-            if (max_count < myargs->count[yrow * myargs->size + xcol]) {
-              max_count = myargs->count[yrow * myargs->size + xcol];
-            }
+          if (yrow < 0 || yrow >= myargs->size) {
+            continue;
           }
+
+          if (xcol < 0 || xcol >= myargs->size) {
+            continue;
+          }
+          
+          pthread_mutex_lock(&mutex);
+          myargs->count[yrow * myargs->size + xcol] += 1;
+
+          if (max_count < myargs->count[yrow * myargs->size + xcol]) {
+            max_count = myargs->count[yrow * myargs->size + xcol];
+          }
+
+          pthread_mutex_unlock(&mutex); 
+
+          // if (!((yrow < 0 || yrow >= myargs->size) || (xcol < 0 || xcol >= myargs->size))) {
+          //   myargs->count[yrow * myargs->size + xcol] += 1;
+          //   if (max_count < myargs->count[yrow * myargs->size + xcol]) {
+          //     max_count = myargs->count[yrow * myargs->size + xcol];
+          //   }
+          // }
         }
       }
     }
   }
 
-  pthread_mutex_unlock(&mutex);
+  // pthread_mutex_unlock(&mutex);
   // Step 3: Compute colors
   pthread_barrier_wait(&barrier);
   float gamma = 0.681;
@@ -115,9 +129,6 @@ void * computeMandelbrot(void* args) {
         value = pow(value, factor);
       }
 
-      // myargs->two_d_array[index].red = round(value *255);
-      // myargs->two_d_array[index].green = round(value *255);
-      // myargs->two_d_array[index].blue = round(value *255);
       myargs->two_d_array[index].red = value *255;
       myargs->two_d_array[index].green = value *255;
       myargs->two_d_array[index].blue = value *255;
@@ -148,7 +159,7 @@ int main(int argc, char* argv[]) {
         "-b <ymin> -t <ymax> -p <numProcesses>\n", argv[0]); break;
     }
   }
-  printf("Generating mandelbrot with size %dx%d\n", size, size);
+  printf("Generating buddhabrot with size %dx%d\n", size, size);
   printf("  Num processes = %d\n", numProcesses);
   printf("  X range = [%.4f,%.4f]\n", xmin, xmax);
   printf("  Y range = [%.4f,%.4f]\n", ymin, ymax);
@@ -161,7 +172,6 @@ int main(int argc, char* argv[]) {
   pthread_t threads[4]; // 4 threads
   struct t_arg *myargs = malloc(sizeof(struct t_arg) * 4);
   struct ppm_pixel* two_d_array = malloc(sizeof(struct ppm_pixel) * size * size);
-  struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);  // generate pallet
   int *membership = malloc(sizeof(int) * size * size); 
   int *count = malloc(sizeof(int) * size * size);
   char output_filename[128];
@@ -169,18 +179,6 @@ int main(int argc, char* argv[]) {
   if (two_d_array == NULL) {
     printf("ERROR: malloc failed!\n");
     exit(1);
-  }
-
-  if (palette == NULL) {
-    printf("ERROR: malloc failed!\n");
-    exit(1);
-  }
-
-  // generate random colors
-  for (int i = 0; i < maxIterations; i++) {
-    palette[i].red = rand() % 255;
-    palette[i].green = rand() % 255;
-    palette[i].blue = rand() % 255;
   }
 
   for (int i = 0; i < (size * size); i++) { 
@@ -194,7 +192,6 @@ int main(int argc, char* argv[]) {
 
   // compute image
   for (int i=0; i < nthreads; i++){
-    myargs[i].palette = palette;
     myargs[i].two_d_array = two_d_array;
     myargs[i].size = size;
     myargs[i].xmin = xmin;
@@ -226,7 +223,6 @@ int main(int argc, char* argv[]) {
       myargs[i].col_start = myargs[i].size/2;
       myargs[i].col_end = myargs[i].size;
     }
-
     pthread_create(&threads[i], NULL, computeMandelbrot, (void*) &myargs[i]);
   }
   
@@ -240,12 +236,10 @@ int main(int argc, char* argv[]) {
   gettimeofday(&tend, NULL);
   timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)/1.e6;
   printf("Computed mandelbrot set (%dx%d) in %.6f seconds\n", size, size, timer);
-  sprintf(output_filename, "mandelbrot-%d-%.ld.ppm", size, time(0));
+  sprintf(output_filename, "buddhabrot-%d-%.ld.ppm", size, time(0));
   printf("Writing file: %s\n", output_filename);
   write_ppm(output_filename, two_d_array, size, size);
 
-  free(palette);
-  palette = NULL;
   free(two_d_array);
   two_d_array = NULL;
   free(myargs);
