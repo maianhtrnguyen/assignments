@@ -67,9 +67,6 @@ int main(int argc, char *argv[]) {
   }
 
   printf("Answer with 4 threads: %d\n", total);
-
-//   free(thread_array);
-//   thread_array = NULL;
   
   return 0;
 }
