@@ -44,20 +44,23 @@ The increase in 1040 bytes comes from printf() calling malloc() to allocate memo
 
 ### Why is the value 1040 bytes? 
 [%hardbreaks]
-Whenever printf() calles malloc(), it will allocate a new string of actual size in memory 1040 bytes 
+1040 bytes come from 1024 bytes allocated by Printf() and 16 bytes for the chunk header. 
 
 ### How many bytes does `mylloc_list.c` allocate when the program ends? Explain why this amount makes sense.
 [%hardbreaks]
-1156 bytes were increased when the program ends, in which there are 1040 bytes allocated by printf(), and 116 bytes allocated by calling sbrk(). 
+1156 bytes were increased when the program ends, in which:
 
-Size of struct chunk = 2 * 4 bytes (for each int) + 8 byte (for struct next pointer) = 16 bytes.
-Calling malloc(100) also means that we are calling sbrk(100 + 16) = sbrk(116). Therefore, every time we call malloc(100), we are allocating 116 bytes in memory. 
+- there are 1024 bytes allocated by printf()
+- 100 bytes for malloc size
+- 2 * 16 bytes for chunk struct 
+
+(Size of struct chunk = 2 * 4 bytes (for each int) + 8 byte (for struct next pointer) = 16 bytes)
 
 = Fragementation
 
 ### What is fragmentation?
 [%hardbreaks]
-Fragmentation is when a user program has allocated memory, but does not use it.
+Fragmentation is when memory is divided into small and separated chunks.
 
 ### What is the difference between internal and external fragmentation?
 [%hardbreaks]
