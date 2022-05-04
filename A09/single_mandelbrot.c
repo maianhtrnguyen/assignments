@@ -6,7 +6,7 @@
 #include "read_ppm.h"
 
 int main(int argc, char* argv[]) {
-  int size = 2000;
+  int size = 100;
   float xmin = -2.0;
   float xmax = 0.47;
   float ymin = -1.12;
@@ -56,8 +56,8 @@ int main(int argc, char* argv[]) {
   }
 
   // compute image
-  for (int row = 0; row < size; row++) {
-    for (int col = 0; col < size; col++) {
+  for (int col = 0; col < size; col++) {
+    for (int row = 0; row < size; row++) {
       float xfrac = ((float)row)/size;
       float yfrac = ((float)col)/size;
       float x0 = xmin + xfrac * (xmax - xmin);
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
         iter += 1;
       }
 
-      int index = (row * size) + col;
+      int index = (col * size) + row;
 
       if (iter < maxIterations) {
         // write color to image at location (row,col)
