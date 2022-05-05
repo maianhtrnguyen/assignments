@@ -56,14 +56,21 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
-  struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
+  int palette_shmid = shmget(IPC_PRIVATE, sizeof(struct ppm_pixel) * maxIterations, 0644 | IPC_CREAT);
+  if (palette_shmid == -1) {
+    perror("Error: cannot initialize shared memory\n");
+    exit(1);
+  }
+
+  // struct ppm_pixel *palette = malloc(sizeof(struct ppm_pixel) * maxIterations);
+  struct ppm_pixel * palette = (struct ppm_pixel *) shmat(palette_shmid, NULL, 0);
   int rowsAndCols[4][4]; // 2D array
   char output_filename[128];
 
-  if (palette == NULL) {
-    printf("ERROR: malloc failed!\n");
-    exit(1);
-  }
+  // if (palette == NULL) {
+  //   printf("ERROR: malloc failed!\n");
+  //   exit(1);
+  // }
 
   // generate random colors
   for (int i = 0; i < maxIterations; i++) {
@@ -160,9 +167,19 @@ int main(int argc, char* argv[]) {
   if (shmctl(shmid, IPC_RMID, 0) == -1) {
     perror("Error: cannot remove shared memory\n");
     exit(1);
+  }  
+
+  if (shmctl(palette_shmid, IPC_RMID, 0) == -1) {
+    perror("Error: cannot remove shared memory\n");
+    exit(1);
   }   
 
-  free(palette);
-  palette = NULL;
+  if (shmdt(palette) == -1) {
+    perror("Error: cannot detatch from shared memory\n");
+    exit(1);
+  }
+
+  // free(palette);
+  // palette = NULL;
   return 0;
 }
